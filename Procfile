@@ -1,0 +1,1 @@
+web: gunicorn danieladebote.wsgi --log-file -
