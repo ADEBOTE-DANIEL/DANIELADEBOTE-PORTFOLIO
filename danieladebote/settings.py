@@ -21,10 +21,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'hrj48*mobkzo)s6q+2wfqcg=_=@5c38n&sb4_vlp#bb^zyp_pi'
+SECRET_KEY = '5qq=(ekcn_hlpb391%6^+h1u(m6gh@(loc&4dmd%awj3h745jm'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -145,12 +145,14 @@ STATICFILES_DIRS = [
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "dannyadebote16@gmail.com"
-EMAIL_HOST_PASSWORD = "vhcrfxvgupqdxrbp"
+EMAIL_HOST_PASSWORD = ""
 
 
 CKEDITOR_UPLOAD_PATH = 'uploads/'
