@@ -17,12 +17,9 @@ from .filters import PostFilter
 from .models import *
 
 # Create your views here.
-
 def home(request):
-	posts = Post.objects.filter(active=True, featured=True)[0:3]
+    return render(request, 'base/index.html')
 
-	context = {'posts':posts}
-	return render(request, 'base/index.html', context)
 
 def posts(request):
 	posts = Post.objects.filter(active=True)
