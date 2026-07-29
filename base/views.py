@@ -103,28 +103,35 @@ def deletePost(request, slug):
 	return render(request, 'base/delete.html', context)
 
 
-
 def sendEmail(request):
+    if request.method == 'POST':
+        try:
+            template = render_to_string(
+                'base/email_template.html',
+                {
+                    'name': request.POST['name'],
+                    'email': request.POST['email'],
+                    'message': request.POST['message'],
+                }
+            )
 
-	if request.method == 'POST':
+            email = EmailMessage(
+                request.POST['subject'],
+                template,
+                settings.EMAIL_HOST_USER,
+                ['dannyadebote16@gmail.com']
+            )
 
-		template = render_to_string('base/email_template.html', {
-			'name':request.POST['name'],
-			'email':request.POST['email'],
-			'message':request.POST['message'],
-			})
+            email.fail_silently = False
+            email.send()
 
-		email = EmailMessage(
-			request.POST['subject'],
-			template,
-			settings.EMAIL_HOST_USER,
-			['dannyadebote16@gmail.com']
-			)
+            return render(request, 'base/email_sent.html')
 
-		email.fail_silently=False
-		email.send()
+        except Exception as e:
+            print("EMAIL ERROR:", repr(e))
+            raise
 
-	return render(request, 'base/email_sent.html')
+    return redirect('home')
 
 def loginPage(request):
 	if request.user.is_authenticated:
