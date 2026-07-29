@@ -16,6 +16,11 @@ from .filters import PostFilter
 
 from .models import *
 
+
+import sib_api_v3_sdk
+from sib_api_v3_sdk.rest import ApiException
+from decouple import config
+
 # Create your views here.
 def home(request):
     return render(request, 'base/index.html')
@@ -104,34 +109,42 @@ def deletePost(request, slug):
 
 
 def sendEmail(request):
+
     if request.method == 'POST':
-        try:
-            template = render_to_string(
-                'base/email_template.html',
+
+        configuration = sib_api_v3_sdk.Configuration()
+        configuration.api_key['api-key'] = config('BREVO_API_KEY')
+
+        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(
+            sib_api_v3_sdk.ApiClient(configuration)
+        )
+
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+            to=[
                 {
-                    'name': request.POST['name'],
-                    'email': request.POST['email'],
-                    'message': request.POST['message'],
+                    "email": "dannyadebote16@gmail.com",
+                    "name": "Daniel"
                 }
-            )
+            ],
+            sender={
+                "email": "b3c17b001@smtp-brevo.com",
+                "name": "Daniel Portfolio"
+            },
+            subject=request.POST['subject'],
+            html_content=f"""
+            Name: {request.POST['name']}<br>
+            Email: {request.POST['email']}<br>
+            Message: {request.POST['message']}
+            """
+        )
 
-            email = EmailMessage(
-                request.POST['subject'],
-                template,
-                settings.EMAIL_HOST_USER,
-                ['dannyadebote16@gmail.com']
-            )
-
-            email.fail_silently = False
-            email.send()
-
+        try:
+            api_instance.send_transac_email(send_smtp_email)
             return render(request, 'base/email_sent.html')
 
-        except Exception as e:
-            print("EMAIL ERROR:", repr(e))
-            raise
-
-    return redirect('home')
+        except ApiException as e:
+            print(e)
+            return HttpResponse("Email failed")
 
 def loginPage(request):
 	if request.user.is_authenticated:
