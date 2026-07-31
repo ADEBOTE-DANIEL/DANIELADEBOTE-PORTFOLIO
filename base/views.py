@@ -53,7 +53,7 @@ def post(request, slug):
 			post=post,
 			body=request.POST['comment']
 			)
-		messages.success(request, "You're comment was successfuly posted!")
+		messages.success(request, "You're comment was successfully posted!")
 
 		return redirect('post', slug=post.slug)
 
@@ -166,7 +166,7 @@ def loginPage(request):
 			login(request, user)
 			return redirect('home')
 		else:
-			messages.error(request, 'Email OR password is incorrect')
+			messages.error(request, 'Email or password is incorrect')
 
 	context = {}
 	return render(request, 'base/login.html', context)
@@ -178,7 +178,7 @@ def registerPage(request):
 		if form.is_valid():
 			user = form.save(commit=False)
 			user.save()
-			messages.success(request, 'Account successfuly created!')
+			messages.success(request, 'Account successfully created!')
 
 			user = authenticate(request, username=user.username, password=request.POST['password1'])
 
