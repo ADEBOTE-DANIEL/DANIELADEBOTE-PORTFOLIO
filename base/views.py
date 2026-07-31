@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.core.mail import EmailMessage
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.contrib.auth.models import User
@@ -109,42 +108,43 @@ def deletePost(request, slug):
 
 
 def sendEmail(request):
-
     if request.method == 'POST':
-
-        configuration = sib_api_v3_sdk.Configuration()
-        configuration.api_key['api-key'] = config('BREVO_API_KEY')
-
-        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(
-            sib_api_v3_sdk.ApiClient(configuration)
-        )
-
-        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-            to=[
-                {
-                    "email": "dannyadebote16@gmail.com",
-                    "name": "Daniel"
-                }
-            ],
-            sender={
-                "email": "b3c17b001@smtp-brevo.com",
-                "name": "Daniel Portfolio"
-            },
-            subject=request.POST['subject'],
-            html_content=f"""
-            Name: {request.POST['name']}<br>
-            Email: {request.POST['email']}<br>
-            Message: {request.POST['message']}
-            """
-        )
-
         try:
+            configuration = sib_api_v3_sdk.Configuration()
+            configuration.api_key['api-key'] = config('BREVO_API_KEY')
+
+            api_instance = sib_api_v3_sdk.TransactionalEmailsApi(
+                sib_api_v3_sdk.ApiClient(configuration)
+            )
+
+            send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+                to=[
+                    {
+                        "email": "dannyadebote16@gmail.com",
+                        "name": "Daniel"
+                    }
+                ],
+                sender={
+                    "email": config('BREVO_EMAIL'),
+                    "name": "Daniel Portfolio"
+                },
+                subject=request.POST['subject'],
+                html_content=f"""
+                Name: {request.POST['name']}<br>
+                Email: {request.POST['email']}<br>
+                Message: {request.POST['message']}
+                """
+            )
+
             api_instance.send_transac_email(send_smtp_email)
+
             return render(request, 'base/email_sent.html')
 
-        except ApiException as e:
-            print(e)
+        except Exception as e:
+            print("EMAIL ERROR:", repr(e))
             return HttpResponse("Email failed")
+
+    return redirect('home')
 
 def loginPage(request):
 	if request.user.is_authenticated:
